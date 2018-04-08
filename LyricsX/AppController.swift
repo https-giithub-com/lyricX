@@ -38,7 +38,7 @@ class AppController: NSObject, MusicPlayerManagerDelegate {
         didSet {
             currentLyrics?.filtrate()
             didChangeValue(forKey: "lyricsOffset")
-            NotificationCenter.default.post(name: .currentLyricsChange, object: nil)
+            displayers.forEach { $0.lyricsChanged(lyrics: currentLyrics) }
             if currentLyrics?.metadata.localURL == nil {
                 currentLyrics?.saveToLocal()
             }
@@ -63,6 +63,8 @@ class AppController: NSObject, MusicPlayerManagerDelegate {
             timer?.fireDate = Date()
         }
     }
+    
+    var displayers: [LyricsDisplayer] = []
     
     private override init() {
         super.init()
@@ -115,7 +117,7 @@ class AppController: NSObject, MusicPlayerManagerDelegate {
     }
     
     func playbackStateChanged(state: MusicPlaybackState) {
-        NotificationCenter.default.post(name: .lyricsShouldDisplay, object: nil)
+        displayers.forEach { $0.lyricsLineChanged(lineIndex: currentLineIndex) }
         if state == .playing {
             timer?.fireDate = Date()
         } else {
@@ -202,14 +204,14 @@ class AppController: NSObject, MusicPlayerManagerDelegate {
     
     func playerPositionMutated(position: TimeInterval) {
         guard let lyrics = currentLyrics else {
-            NotificationCenter.default.post(name: .lyricsShouldDisplay, object: nil)
+            displayers.forEach { $0.lyricsLineChanged(lineIndex: currentLineIndex) }
             timer?.fireDate = .distantFuture
             return
         }
         let (index, next) = lyrics[position + lyrics.timeDelay]
         if currentLineIndex != index {
             currentLineIndex = index
-            NotificationCenter.default.post(name: .lyricsShouldDisplay, object: nil)
+            displayers.forEach { $0.lyricsLineChanged(lineIndex: currentLineIndex) }
         }
         if let next = next {
             timer?.fireDate = Date() + lyrics.lines[next].position - lyrics.timeDelay - position

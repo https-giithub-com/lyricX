@@ -23,7 +23,7 @@ import LyricsProvider
 import MusicPlayer
 import GenericID
 
-class MenuBarLyrics: NSObject {
+class MenuBarLyrics: NSObject, LyricsDisplayer {
     
     static let shared = MenuBarLyrics()
     
@@ -39,11 +39,6 @@ class MenuBarLyrics: NSObject {
     private override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleLyricsDisplay), name: .lyricsShouldDisplay, object: nil)
-        NSWorkspace.shared.notificationCenter.addObserver(self,
-                                                          selector: #selector(updateStatusItem),
-                                                          name: NSWorkspace.didActivateApplicationNotification,
-                                                          object: nil)
         statusItemObservation = defaults.observe(keys: [.MenuBarLyricsEnabled, .CombinedMenubarLyrics], options: [.initial]) { [unowned self] in
             self.updateStatusItem()
         }
@@ -63,6 +58,14 @@ class MenuBarLyrics: NSObject {
         }
         displayLyrics = lrc
         updateStatusItem()
+    }
+    
+    func lyricsChanged(lyrics: Lyrics?) {
+        
+    }
+    
+    func lyricsLineChanged(lineIndex: Int?) {
+        handleLyricsDisplay()
     }
     
     @objc func updateStatusItem() {

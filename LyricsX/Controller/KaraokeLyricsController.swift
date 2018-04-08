@@ -25,14 +25,14 @@ import LyricsProvider
 import MusicPlayer
 import GenericID
 
-class KaraokeLyricsWindowController: NSWindowController {
+class KaraokeLyricsWindowController: NSWindowController, LyricsDisplayer {
     
     private var lyricsView = KaraokeLyricsView(frame: .zero)
     
     var currentLineIndex: Int?
     
     var defaultObservations: [DefaultsObservation] = []
-    var notifications: [NSObjectProtocol] = []
+    var fullScreenNotification: NSObjectProtocol?
     
     override func windowDidLoad() {
         window?.do {
@@ -54,9 +54,12 @@ class KaraokeLyricsWindowController: NSWindowController {
         lyricsView.displayLrc("LyricsX")
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.lyricsView.displayLrc("")
-            NotificationCenter.default.addObserver(self, selector: #selector(self.handleLyricsDisplay), name: .lyricsShouldDisplay, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.handleLyricsDisplay), name: .currentLyricsChange, object: nil)
+            AppController.shared.displayers.append(self)
         }
+    }
+    
+    deinit {
+        fullScreenNotification.map(NSWorkspace.shared.notificationCenter.removeObserver)
     }
     
     private func addObserver() {
@@ -102,13 +105,12 @@ class KaraokeLyricsWindowController: NSWindowController {
             }
         ]
         
-        // swiftlint:disable:next discarded_notification_center_observer
-        notifications += [NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+        fullScreenNotification = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.activeSpaceDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
             if let mainScreen = NSScreen.main {
                 let frame = isFullScreen() == true ? mainScreen.frame : mainScreen.visibleFrame
                 self?.window?.setFrame(frame, display: false, animate: true)
             }
-        }]
+        }
     }
     
     @objc func handleLyricsDisplay() {
@@ -156,6 +158,14 @@ class KaraokeLyricsWindowController: NSWindowController {
             }
 
         }
+    }
+    
+    func lyricsChanged(lyrics: Lyrics?) {
+        handleLyricsDisplay()
+    }
+    
+    func lyricsLineChanged(lineIndex: Int?) {
+        handleLyricsDisplay()
     }
     
     private func makeConstraints() {

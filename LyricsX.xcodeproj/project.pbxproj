@@ -55,6 +55,7 @@
 		BBE8FC751F6BEA6200122AFA /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE8FC741F6BEA6200122AFA /* Then.swift */; };
 		BBF83E221FB5502000D76E5B /* MusicPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBF83E201FB5501A00D76E5B /* MusicPlayer.framework */; };
 		BBF83E231FB5502000D76E5B /* MusicPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BBF83E201FB5501A00D76E5B /* MusicPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E9E5512E2079B8E200F9958A /* LyricsDisplayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E5512D2079B8E200F9958A /* LyricsDisplayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -140,6 +141,7 @@
 		BBE557961EC0291E00F1EC31 /* GenericID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GenericID.framework; path = Carthage/Build/Mac/GenericID.framework; sourceTree = "<group>"; };
 		BBE8FC741F6BEA6200122AFA /* Then.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Then.swift; sourceTree = "<group>"; };
 		BBF83E201FB5501A00D76E5B /* MusicPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MusicPlayer.framework; path = Carthage/Build/Mac/MusicPlayer.framework; sourceTree = "<group>"; };
+		E9E5512D2079B8E200F9958A /* LyricsDisplayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsDisplayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +210,7 @@
 				BB6139761FCCFA6700CBD808 /* Perference.storyboard */,
 				BB03C8881FDF6FC000FBE0DA /* ChineseConverter+Singleton.swift */,
 				BB458C62201C5F4500740C3B /* LyricsMetaData+Extension.swift */,
+				E9E5512D2079B8E200F9958A /* LyricsDisplayer.swift */,
 				BB063B2F1E8A93CE00A25C3E /* View */,
 				BB7EC7B41E4ECFFB00A0AC3F /* Controller */,
 				BB7EC7B61E4ED03900A0AC3F /* Utility */,
@@ -494,6 +497,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB7365B41FD51E0E007EFFF7 /* NSTextField+ProgressAnimation.swift in Sources */,
+				E9E5512E2079B8E200F9958A /* LyricsDisplayer.swift in Sources */,
 				BB4141C01E45B67800A51775 /* KaraokeLyricsController.swift in Sources */,
 				BB7EC7B21E4E018C00A0AC3F /* LyricsHUDViewController.swift in Sources */,
 				BBC1D5911E4C80FC008869EC /* PreferenceDisplayViewController.swift in Sources */,

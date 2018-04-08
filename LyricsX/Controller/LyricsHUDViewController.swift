@@ -21,8 +21,9 @@
 import Cocoa
 import MusicPlayer
 import GenericID
+import LyricsProvider
 
-class LyricsHUDViewController: NSViewController, NSWindowDelegate, ScrollLyricsViewDelegate, DragNDropDelegate {
+class LyricsHUDViewController: NSViewController, NSWindowDelegate, ScrollLyricsViewDelegate, DragNDropDelegate, LyricsDisplayer {
     
     @IBOutlet weak var dragNDropView: DragNDropView!
     @IBOutlet weak var lyricsScrollView: ScrollLyricsView!
@@ -39,7 +40,7 @@ class LyricsHUDViewController: NSViewController, NSWindowDelegate, ScrollLyricsV
         }
     }
     
-    private var observations: [NSObjectProtocol] = []
+    private var scrollObservation: NSObjectProtocol?
     private var defaltsObservation: DefaultsObservation?
     
     override func awakeFromNib() {
@@ -71,22 +72,23 @@ class LyricsHUDViewController: NSViewController, NSWindowDelegate, ScrollLyricsV
         }
         
         let nc = NotificationCenter.default
-        // swiftlint:disable discarded_notification_center_observer
-        observations += [
-            nc.addObserver(forName: .lyricsShouldDisplay, object: nil, queue: nil) { [unowned self] _ in self.displayLyrics() },
-            nc.addObserver(forName: .currentLyricsChange, object: nil, queue: nil) { [unowned self] _ in self.lyricsChanged() },
-            nc.addObserver(forName: NSScrollView.willStartLiveScrollNotification, object: lyricsScrollView, queue: .main) { [unowned self] _ in self.isTracking = false }
-        ]
-        // swiftlint:enable discarded_notification_center_observer
+        scrollObservation = nc.addObserver(forName: NSScrollView.willStartLiveScrollNotification, object: lyricsScrollView, queue: .main) { [unowned self] _ in self.isTracking = false }
     }
     
     override func viewWillAppear() {
         noLyricsLabel.isHidden = AppController.shared.currentLyrics != nil
         displayLyrics(animation: false)
+        AppController.shared.displayers.append(self)
+    }
+    
+    override func viewDidDisappear() {
+        if let index = AppController.shared.displayers.index(where: {$0 === self}) {
+            AppController.shared.displayers.remove(at: index)
+        }
     }
     
     deinit {
-        observations.forEach(NotificationCenter.default.removeObserver)
+        scrollObservation.map(NotificationCenter.default.removeObserver)
     }
     
     // MARK: - Handler
@@ -120,6 +122,14 @@ class LyricsHUDViewController: NSViewController, NSWindowDelegate, ScrollLyricsV
         } else {
             lyricsScrollView.scroll(position: pos)
         }
+    }
+    
+    func lyricsChanged(lyrics: Lyrics?) {
+        lyricsChanged()
+    }
+    
+    func lyricsLineChanged(lineIndex: Int?) {
+        displayLyrics()
     }
     
     // MARK: ScrollLyricsViewDelegate

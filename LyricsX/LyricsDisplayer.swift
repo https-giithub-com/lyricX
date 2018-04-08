@@ -1,5 +1,5 @@
 //
-//  ChineseConverter+Singleton.swift
+//  LyricsDisplayer.swift
 //
 //  This file is part of LyricsX
 //  Copyright (C) 2017 Xander Deng - https://github.com/ddddxxx/LyricsX
@@ -18,22 +18,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import OpenCC
+import Foundation
+import MusicPlayer
+import LyricsProvider
 
-extension ChineseConverter {
+protocol LyricsDisplayer: class {
     
-    static var shared: ChineseConverter? {
-        _ = ChineseConverter.observer
-        return _shared
-    }
+    func lyricsChanged(lyrics: Lyrics?)
     
-    private static var _shared: ChineseConverter?
-    
-    private static let observer = defaults.observe(.ChineseConversionIndex, options: [.new, .initial]) { _, change in
-        switch change.newValue {
-        case 1: ChineseConverter._shared = ChineseConverter(option: [.simplify])
-        case 2: ChineseConverter._shared = ChineseConverter(option: [.traditionalize])
-        case 0, _: ChineseConverter._shared = nil
-        }
-    }
+    func lyricsLineChanged(lineIndex: Int?)
 }
